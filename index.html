@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Pensão Comprovada</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:15px;background:#f5f5f5;color:#1a1a1a}
+.app{max-width:430px;margin:0 auto;background:#fff;min-height:100vh;padding-bottom:84px;position:relative}
+.topbar{background:#fff;border-bottom:1px solid #e8e8e8;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar h1{font-size:15px;font-weight:600;color:#1a1a1a}
+.topbar p{font-size:11px;color:#888;margin-top:1px}
+.avatar{width:32px;height:32px;border-radius:50%;background:#E6F1FB;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#185FA5;cursor:pointer;border:1px solid #ddd;flex-shrink:0}
+.nav{display:flex;border-bottom:1px solid #e8e8e8;background:#fff;position:sticky;top:61px;z-index:99}
+.nb{flex:1;padding:9px 2px;font-size:11px;border:none;background:none;color:#888;cursor:pointer;border-bottom:2px solid transparent;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:inherit}
+.nb i{font-size:19px}
+.nb.on{color:#1a1a1a;border-bottom:2px solid #1a1a1a;font-weight:600}
+.pg{padding:16px;display:none}
+.pg.on{display:block}
+.card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:16px;margin-bottom:12px}
+.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:14px}
+.met{background:#f8f8f8;border-radius:10px;padding:12px}
+.met-lbl{font-size:11px;color:#888;margin-bottom:3px}
+.met-val{font-size:19px;font-weight:600}
+.sec-lbl{font-size:11px;font-weight:600;color:#888;letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px}
+label{display:block;font-size:13px;color:#666;margin:10px 0 4px}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;font-size:14px;font-family:inherit;outline:none}
+input:focus,select:focus,textarea:focus{border-color:#888}
+textarea{min-height:52px;resize:vertical}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1a1a1a;font-size:14px;cursor:pointer;font-family:inherit;transition:.15s}
+.btn:active{transform:scale(.98)}
+.btn-full{width:100%;justify-content:center;margin-top:10px}
+.btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.btn-google{background:#fff;color:#3c4043;border:1px solid #dadce0;font-size:15px;padding:12px 16px}
+.upload-zone{border:2px dashed #ddd;border-radius:12px;padding:28px 16px;text-align:center;cursor:pointer;transition:.2s;margin-bottom:12px}
+.upload-zone:hover{border-color:#888;background:#fafafa}
+.upload-zone i{font-size:32px;color:#aaa;display:block;margin-bottom:8px}
+.upload-zone p{font-size:14px;color:#666;font-weight:500}
+.upload-zone small{font-size:12px;color:#aaa}
+.preview-img{width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-bottom:12px;display:none}
+.status-box{display:none;padding:12px 14px;border-radius:8px;font-size:13px;margin-bottom:10px;text-align:center}
+.s-analyzing{background:#E6F1FB;color:#0C447C}
+.s-ok{background:#EAF3DE;color:#27500A}
+.s-err{background:#FCEBEB;color:#791F1F}
+.result-box{display:none}
+.field-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:14px}
+.field-row:last-child{border-bottom:none}
+.field-lbl{color:#888;font-size:13px}
+.badge{padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.exp-item{display:flex;gap:10px;padding:11px 0;border-bottom:1px solid #f0f0f0;align-items:flex-start}
+.exp-item:last-child{border-bottom:none}
+.exp-thumb{width:38px;height:38px;border-radius:8px;object-fit:cover;border:1px solid #eee;flex-shrink:0;cursor:pointer}
+.exp-thumb-ph{width:38px;height:38px;border-radius:8px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid #eee}
+.exp-info{flex:1;min-width:0}
+.exp-desc{font-size:14px;font-weight:600;color:#1a1a1a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exp-meta{font-size:12px;color:#888;margin-top:3px}
+.exp-right{text-align:right;flex-shrink:0}
+.exp-val{font-size:14px;font-weight:600;color:#1a1a1a}
+.del-btn{font-size:11px;color:#bbb;cursor:pointer;display:block;margin-top:3px;background:none;border:none;font-family:inherit}
+.del-btn:hover{color:#D85A30}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.bar-lbl{width:82px;font-size:12px;color:#666}
+.bar-track{flex:1;background:#f0f0f0;border-radius:4px;height:8px}
+.bar-fill{height:8px;border-radius:4px;transition:.5s}
+.bar-amt{width:68px;text-align:right;font-size:12px;font-weight:600;color:#1a1a1a}
+.chip{padding:5px 12px;border-radius:20px;font-size:12px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer}
+.chip.on{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.chips-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.empty{text-align:center;padding:32px;color:#aaa;font-size:14px}
+.spin{display:inline-block;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:#1D9E75;color:#fff;padding:10px 22px;border-radius:24px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:.3s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.toast.show{opacity:1}
+.login-screen{padding:40px 24px;text-align:center;min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.login-icon{width:72px;height:72px;border-radius:20px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:36px}
+.login-screen h2{font-size:22px;font-weight:700;margin-bottom:10px}
+.login-screen p{font-size:14px;color:#666;line-height:1.6;margin-bottom:28px;max-width:300px}
+.feature-badges{display:flex;flex-direction:column;gap:8px;margin-bottom:28px;width:100%;max-width:280px}
+.feat{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:500;text-align:left}
+.feat i{font-size:18px;flex-shrink:0}
+.report-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:13px}
+.report-row:last-child{border-bottom:none}
+.saving-ind{display:none;text-align:center;padding:10px;font-size:13px;color:#666}
+.drive-status{display:flex;align-items:center;gap:6px;font-size:12px;color:#666;margin-top:12px;padding:8px 10px;background:#f8f8f8;border-radius:8px}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="topbar">
+    <div>
+      <h1><i class="ti ti-shield-check" style="font-size:15px"></i> Pensão Comprovada</h1>
+      <p id="topbar-sub">Carregando...</p>
+    </div>
+    <div id="user-avatar" class="avatar" style="display:none" onclick="showUserMenu()">?</div>
+  </div>
+
+  <div id="login-view">
+    <div class="login-screen">
+      <div class="login-icon"><i class="ti ti-shield-check" style="color:#185FA5"></i></div>
+      <h2>Pensão Comprovada</h2>
+      <p>Fotografe comprovantes fiscais, a IA identifica o valor e categoria, e tudo é salvo no seu Google Drive organizado por mês.</p>
+      <div class="feature-badges">
+        <div class="feat" style="background:#E6F1FB;color:#0C447C"><i class="ti ti-camera"></i> Foto do comprovante → IA extrai os dados</div>
+        <div class="feat" style="background:#EAF3DE;color:#27500A"><i class="ti ti-brand-google-drive"></i> Fotos salvas no Google Drive por mês</div>
+        <div class="feat" style="background:#EEEDFE;color:#3C3489"><i class="ti ti-table"></i> Registros no Google Sheets automaticamente</div>
+        <div class="feat" style="background:#FAECE7;color:#993C1D"><i class="ti ti-file-analytics"></i> Relatório de prestação de contas</div>
+      </div>
+      <button class="btn btn-google btn-full" onclick="doLogin()" style="margin-top:0;max-width:300px">
+        <svg width="18" height="18" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        Entrar com Google
+      </button>
+      <p style="font-size:11px;color:#bbb;margin-top:16px">Seus dados ficam no seu próprio Google Drive.<br>Nunca compartilhamos suas informações.</p>
+    </div>
+  </div>
+
+  <div id="main-view" style="display:none">
+    <div class="nav">
+      <button class="nb on" onclick="goPage('p-scan')"><i class="ti ti-camera"></i>Escanear</button>
+      <button class="nb" onclick="goPage('p-dash')"><i class="ti ti-layout-dashboard"></i>Painel</button>
+      <button class="nb" onclick="goPage('p-list')"><i class="ti ti-list"></i>Gastos</button>
+      <button class="nb" onclick="goPage('p-report')"><i class="ti ti-file-analytics"></i>Relatório</button>
+    </div>
+
+    <div id="p-scan" class="pg on">
+      <div class="toast" id="toast"></div>
+      <div class="card">
+        <div class="sec-lbl">Novo comprovante</div>
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-inp').click()">
+          <i class="ti ti-camera-up"></i>
+          <p>Tirar foto ou escolher da galeria</p>
+          <small>Mercado · Farmácia · Escola · Médico · Restaurante</small>
+        </div>
+        <input type="file" id="file-inp" accept="image/*" capture="environment" style="display:none" onchange="onFile(this)">
+        <img id="img-preview" class="preview-img" alt="comprovante">
+        <div id="status-box" class="status-box"></div>
+        <div id="result-box" class="result-box">
+          <div class="sec-lbl" style="margin-top:4px">Dados extraídos pela IA</div>
+          <div class="card" style="padding:12px;margin-bottom:10px">
+            <div class="field-row"><span class="field-lbl">Estabelecimento</span><span style="font-weight:600;font-size:13px" id="r-estab">—</span></div>
+            <div class="field-row"><span class="field-lbl">Categoria</span><span id="r-cat-badge"></span></div>
+            <div class="field-row"><span class="field-lbl">Valor</span><span style="font-weight:600" id="r-value">—</span></div>
+            <div class="field-row"><span class="field-lbl">Data</span><span style="font-weight:600" id="r-date">—</span></div>
+          </div>
+          <label>Ajustar descrição</label>
+          <input type="text" id="r-desc">
+          <label>Ajustar valor (R$)</label>
+          <input type="number" id="r-val" step="0.01" min="0">
+          <label>Ajustar data</label>
+          <input type="date" id="r-dt">
+          <label>Ajustar categoria</label>
+          <select id="r-cat">
+            <option value="saude">🏥 Saúde e medicamentos</option>
+            <option value="educacao">📚 Educação</option>
+            <option value="alimentacao">🍽️ Alimentação</option>
+            <option value="vestuario">👕 Vestuário</option>
+            <option value="lazer">🎠 Lazer e esportes</option>
+            <option value="transporte">🚌 Transporte</option>
+            <option value="moradia">🏠 Moradia / contas</option>
+            <option value="outros">📦 Outros</option>
+          </select>
+          <label>Observação (opcional)</label>
+          <textarea id="r-obs" placeholder="Detalhes adicionais..."></textarea>
+          <div class="saving-ind" id="saving-ind">
+            <i class="ti ti-loader spin"></i> Salvando no Drive e Sheets...
+          </div>
+          <button class="btn btn-primary btn-full" id="save-btn" onclick="saveExpense()">
+            <i class="ti ti-device-floppy"></i> Salvar no Drive + Sheets
+          </button>
+          <button class="btn btn-full" style="margin-top:6px" onclick="resetScan()">
+            <i class="ti ti-x"></i> Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="p-dash" class="pg">
+      <div class="metrics" id="dash-metrics"></div>
+      <div class="card">
+        <div class="sec-lbl">Por categoria — <span id="dash-month-lbl"></span></div>
+        <div id="dash-bars"></div>
+      </div>
+      <div class="card">
+        <div class="sec-lbl">Últimos registros</div>
+        <div id="dash-recent"></div>
+      </div>
+      <div class="card">
+        <div class="sec-lbl">Configurações</div>
+        <label>Pensão mensal (R$)</label>
+        <input type="number" id="cfg-pension" placeholder="Ex: 1500" oninput="saveCfg()">
+        <label>Mês de referência</label>
+        <input type="month" id="cfg-month" onchange="saveCfg();renderDash()">
+        <label>Nome da criança</label>
+        <input type="text" id="cfg-child" placeholder="Nome completo" oninput="saveCfg()">
+        <div class="drive-status">
+          <i class="ti ti-brand-google-drive" style="color:#185FA5;font-size:15px"></i>
+          <span id="drive-status">Verificando conexão...</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="p-list" class="pg">
+      <div class="chips-row" id="month-chips"></div>
+      <select id="cat-filter" style="margin-bottom:12px" onchange="renderList()">
+        <option value="">Todas as categorias</option>
+        <option value="saude">Saúde</option>
+        <option value="educacao">Educação</option>
+        <option value="alimentacao">Alimentação</option>
+        <option value="vestuario">Vestuário</option>
+        <option value="lazer">Lazer</option>
+        <option value="transporte">Transporte</option>
+        <option value="moradia">Moradia</option>
+        <option value="outros">Outros</option>
+      </select>
+      <div id="list-content"></div>
+    </div>
+
+    <div id="p-report" class="pg">
+      <div class="card">
+        <div class="sec-lbl">Gerar prestação de contas</div>
+        <label>Mês</label>
+        <select id="rep-month"></select>
+        <label>Nome da mãe/responsável</label>
+        <input type="text" id="rep-mom" placeholder="Nome completo">
+        <button class="btn btn-primary btn-full" onclick="renderReport()">
+          <i class="ti ti-file-analytics"></i> Gerar relatório
+        </button>
+        <button class="btn btn-full" style="margin-top:6px" onclick="openSheets()">
+          <i class="ti ti-table"></i> Abrir planilha no Google Sheets
+        </button>
+        <button class="btn btn-full" style="margin-top:6px" onclick="openDriveFolder()">
+          <i class="ti ti-brand-google-drive"></i> Abrir pasta no Drive
+        </button>
+      </div>
+      <div id="report-out"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast-global"></div>
+
+<script>
+const CLIENT_ID = '916320845002-kqish7him6hjinbft1i1cchr6tkhsioh.apps.googleusercontent.com';
+const SCOPES = 'https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile';
+const FOLDER_NAME = 'Pensão Comprovada';
+const SHEET_NAME = 'Gastos';
+const REDIRECT_URI = window.location.origin + window.location.pathname;
+
+const CATS = {
+  saude:      {label:'Saúde',       color:'#993C1D',bg:'#FAECE7',bar:'#D85A30'},
+  educacao:   {label:'Educação',    color:'#0C447C', bg:'#E6F1FB',bar:'#185FA5'},
+  alimentacao:{label:'Alimentação', color:'#085041', bg:'#E1F5EE',bar:'#1D9E75'},
+  vestuario:  {label:'Vestuário',   color:'#3C3489', bg:'#EEEDFE',bar:'#7F77DD'},
+  lazer:      {label:'Lazer',       color:'#633806', bg:'#FAEEDA',bar:'#EF9F27'},
+  transporte: {label:'Transporte',  color:'#27500A', bg:'#EAF3DE',bar:'#639922'},
+  moradia:    {label:'Moradia',     color:'#444441', bg:'#F1EFE8',bar:'#888780'},
+  outros:     {label:'Outros',      color:'#72243E', bg:'#FBEAF0',bar:'#D4537E'},
+};
+
+let S = {expenses:[],pension:0,refMonth:'',childName:'',listMonth:'',sheetId:null,rootFolderId:null};
+let accessToken = null;
+let userInfo = null;
+let currentImage = null;
+let currentImageBlob = null;
+
+function loadLocal(){
+  try{ const d=localStorage.getItem('pc_v3'); if(d) S={...S,...JSON.parse(d)}; }catch(e){}
+  const now = new Date();
+  if(!S.refMonth) S.refMonth = now.toISOString().slice(0,7);
+  if(!S.listMonth) S.listMonth = S.refMonth;
+}
+function persist(){ try{ localStorage.setItem('pc_v3',JSON.stringify(S)); }catch(e){} }
+
+function fmtR(v){ return 'R$ '+parseFloat(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtD(d){ if(!d) return ''; const [y,m,dd]=d.split('-'); return `${dd}/${m}/${y}`; }
+function fmtYM(ym){ if(!ym) return ''; const [y,m]=ym.split('-'); const ms=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']; return ms[parseInt(m)-1]+'/'+y; }
+function fmtMonthFull(ym){ if(!ym) return ''; const [y,m]=ym.split('-'); const ms=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']; return ms[parseInt(m)-1]+' de '+y; }
+function badge(cat){ const c=CATS[cat]||{label:cat,color:'#444',bg:'#eee'}; return `<span class="badge" style="background:${c.bg};color:${c.color}">${c.label}</span>`; }
+
+function showToast(msg,ok=true){
+  const t=document.getElementById('toast-global');
+  t.style.background=ok?'#1D9E75':'#D85A30';
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+function setStatus(msg,type='analyzing'){
+  const b=document.getElementById('status-box');
+  b.className='status-box s-'+type;
+  b.style.display='block';
+  const icon=type==='analyzing'?'loader spin':type==='ok'?'check':'alert-circle';
+  b.innerHTML=`<i class="ti ti-${icon}"></i> ${msg}`;
+}
+function hideStatus(){ document.getElementById('status-box').style.display='none'; }
+
+function doLogin(){
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID,
+    redirect_uri: REDIRECT_URI,
+    response_type: 'token',
+    scope: SCOPES,
+    include_granted_scopes: 'true',
+    state: 'pensao_login',
+  });
+  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?'+params.toString();
+}
+
+function checkCallback(){
+  const hash = window.location.hash.substring(1);
+  const params = new URLSearchParams(hash);
+  if(params.get('access_token') && params.get('state')==='pensao_login'){
+    accessToken = params.get('access_token');
+    history.replaceState(null,'',window.location.pathname);
+    fetchUserInfo();
+    return true;
+  }
+  return false;
+}
+
+async function fetchUserInfo(){
+  try{
+    const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+accessToken}});
+    userInfo = await r.json();
+  }catch(e){}
+  showMainApp();
+}
+
+function showMainApp(){
+  document.getElementById('login-view').style.display='none';
+  document.getElementById('main-view').style.display='block';
+  if(userInfo){
+    const av=document.getElementById('user-avatar');
+    av.style.display='flex';
+    av.textContent=(userInfo.name||userInfo.email||'U').charAt(0).toUpperCase();
+  }
+  document.getElementById('cfg-pension').value=S.pension||'';
+  document.getElementById('cfg-month').value=S.refMonth;
+  document.getElementById('cfg-child').value=S.childName||'';
+  updateTopbar();
+  ensureDriveStructure();
+}
+
+function showUserMenu(){
+  const email = userInfo?.email||'';
+  alert(`Conta: ${email}\n\nArquivos salvos em:\nGoogle Drive → ${FOLDER_NAME}\nGoogle Sheets → ${SHEET_NAME}`);
+}
+
+function updateTopbar(){
+  document.getElementById('topbar-sub').textContent = fmtMonthFull(S.refMonth)+(S.childName?' · '+S.childName:'');
+}
+
+function saveCfg(){
+  S.pension=parseFloat(document.getElementById('cfg-pension').value)||0;
+  S.refMonth=document.getElementById('cfg-month').value||S.refMonth;
+  S.childName=document.getElementById('cfg-child').value.trim();
+  persist(); updateTopbar();
+}
+
+async function ensureDriveStructure(){
+  if(!accessToken) return;
+  try{
+    if(!S.rootFolderId){
+      const r=await gdriveList(`name='${FOLDER_NAME}' and mimeType='application/vnd.google-apps.folder' and trashed=false`);
+      S.rootFolderId = r.files?.length ? r.files[0].id : (await gdriveCreateFolder(FOLDER_NAME,null)).id;
+    }
+    if(!S.sheetId){
+      const r=await gdriveList(`name='${SHEET_NAME}' and mimeType='application/vnd.google-apps.spreadsheet' and trashed=false`);
+      if(r.files?.length){ S.sheetId=r.files[0].id; }
+      else{ await createSheet(); }
+    }
+    persist();
+    document.getElementById('drive-status').textContent='Conectado · '+FOLDER_NAME;
+  }catch(e){
+    document.getElementById('drive-status').textContent='Erro ao conectar ao Drive';
+  }
+}
+
+async function gdriveList(q){
+  const r=await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id,name)`,{headers:{Authorization:'Bearer '+accessToken}});
+  return r.json();
+}
+async function gdriveCreateFolder(name,parentId){
+  const meta={name,mimeType:'application/vnd.google-apps.folder'};
+  if(parentId) meta.parents=[parentId];
+  const r=await fetch('https://www.googleapis.com/drive/v3/files',{method:'POST',headers:{'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify(meta)});
+  return r.json();
+}
+async function createSheet(){
+  const r=await fetch('https://sheets.googleapis.com/v4/spreadsheets',{method:'POST',headers:{'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify({properties:{title:SHEET_NAME},sheets:[{properties:{title:'Gastos'}}]})});
+  const d=await r.json();
+  S.sheetId=d.spreadsheetId;
+  await sheetsAppend([['Data','Estabelecimento','Categoria','Valor (R$)','Observação','Link do Comprovante','Mês','Ano']]);
+  if(S.rootFolderId){
+    await fetch(`https://www.googleapis.com/drive/v3/files/${S.sheetId}?addParents=${S.rootFolderId}&fields=id`,{method:'PATCH',headers:{Authorization:'Bearer '+accessToken}});
+  }
+}
+async function sheetsAppend(values){
+  await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${S.sheetId}/values/Gastos!A1:append?valueInputOption=USER_ENTERED`,{method:'POST',headers:{'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify({values})});
+}
+async function uploadPhoto(blob,filename,folderId){
+  const meta={name:filename,parents:[folderId]};
+  const form=new FormData();
+  form.append('metadata',new Blob([JSON.stringify(meta)],{type:'application/json'}));
+  form.append('file',blob);
+  const r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink',{method:'POST',headers:{Authorization:'Bearer '+accessToken},body:form});
+  return r.json();
+}
+async function getOrCreateSub(name,parentId){
+  const r=await gdriveList(`name='${name}' and mimeType='application/vnd.google-apps.folder' and '${parentId}' in parents and trashed=false`);
+  return r.files?.length ? r.files[0] : gdriveCreateFolder(name,parentId);
+}
+async function getMonthFolder(ym){
+  const [y,m]=ym.split('-');
+  const ms=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const yearF=await getOrCreateSub(y,S.rootFolderId);
+  return getOrCreateSub(ms[parseInt(m)-1]+' '+y,yearF.id);
+}
+
+function goPage(id){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  ['p-scan','p-dash','p-list','p-report'].forEach((p,i)=>{ if(p===id) document.querySelectorAll('.nb')[i].classList.add('on'); });
+  if(id==='p-dash') renderDash();
+  if(id==='p-list') renderList();
+  if(id==='p-report') populateRepMonth();
+}
+
+async function onFile(inp){
+  const f=inp.files[0]; if(!f) return;
+  currentImageBlob=f;
+  const reader=new FileReader();
+  reader.onload=async ev=>{
+    currentImage=ev.target.result;
+    document.getElementById('img-preview').src=currentImage;
+    document.getElementById('img-preview').style.display='block';
+    document.getElementById('upload-zone').style.display='none';
+    document.getElementById('result-box').style.display='none';
+    setStatus('IA analisando o comprovante...','analyzing');
+    await analyzeReceipt(currentImage, f.type||'image/jpeg');
+  };
+  reader.readAsDataURL(f);
+  inp.value='';
+}
+
+async function analyzeReceipt(dataUrl,mtype){
+  const b64=dataUrl.split(',')[1];
+  const prompt=`Você é especialista em reconhecer comprovantes fiscais brasileiros para controle de gastos com crianças.\n\nAnalise esta imagem e extraia:\n1. Nome do estabelecimento\n2. Valor total pago (número em reais)\n3. Data (formato YYYY-MM-DD)\n4. Categoria: saude, educacao, alimentacao, vestuario, lazer, transporte, moradia, ou outros\n5. Descrição curta (máximo 45 caracteres)\n\nResponda SOMENTE em JSON válido sem markdown:\n{"estab":"nome","valor":0.00,"data":"YYYY-MM-DD","categoria":"categoria","descricao":"descrição"}\n\nSe não identificar algum campo use null.`;
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:300,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mtype,data:b64}},{type:'text',text:prompt}]}]})});
+    const data=await resp.json();
+    const txt=(data.content||[]).map(c=>c.text||'').join('');
+    let parsed={};
+    try{ parsed=JSON.parse(txt.replace(/```json|```/g,'').trim()); }catch(e){}
+    hideStatus();
+    showResult(parsed);
+  }catch(err){
+    setStatus('Não foi possível analisar. Preencha manualmente.','err');
+    showResult({});
+  }
+}
+
+function showResult(r){
+  const cat=r.categoria||'outros';
+  const today=new Date().toISOString().slice(0,10);
+  document.getElementById('r-estab').textContent=r.estab||'Não identificado';
+  document.getElementById('r-cat-badge').innerHTML=badge(cat);
+  document.getElementById('r-value').textContent=r.valor!=null?fmtR(r.valor):'—';
+  document.getElementById('r-date').textContent=r.data?fmtD(r.data):'—';
+  document.getElementById('r-desc').value=r.descricao||r.estab||'';
+  document.getElementById('r-val').value=r.valor!=null?r.valor:'';
+  document.getElementById('r-dt').value=r.data||today;
+  document.getElementById('r-cat').value=cat;
+  document.getElementById('r-obs').value='';
+  document.getElementById('result-box').style.display='block';
+}
+
+async function saveExpense(){
+  const val=parseFloat(document.getElementById('r-val').value);
+  const date=document.getElementById('r-dt').value;
+  const desc=document.getElementById('r-desc').value.trim();
+  const cat=document.getElementById('r-cat').value;
+  const obs=document.getElementById('r-obs').value.trim();
+  if(!val||!date||!desc){ alert('Preencha descrição, valor e data.'); return; }
+
+  document.getElementById('save-btn').style.display='none';
+  document.getElementById('saving-ind').style.display='block';
+
+  const exp={id:Date.now().toString(36),description:desc,value:val,date,category:cat,obs,savedAt:new Date().toISOString(),driveLink:null,image:currentImage};
+
+  if(accessToken && S.rootFolderId){
+    try{
+      const monthFolder=await getMonthFolder(date.slice(0,7));
+      const catFolder=await getOrCreateSub((CATS[cat]||{label:cat}).label, monthFolder.id);
+      const fname=`${date}_${desc.replace(/[^a-zA-Z0-9\u00C0-\u024F]/g,'_').slice(0,30)}.jpg`;
+      const blob=currentImageBlob||(await (await fetch(currentImage)).blob());
+      const uploaded=await uploadPhoto(blob,fname,catFolder.id);
+      exp.driveLink=uploaded.webViewLink||null;
+      exp.driveFileId=uploaded.id||null;
+      const [y,m]=date.split('-');
+      const ms=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+      await sheetsAppend([[fmtD(date),desc,(CATS[cat]||{label:cat}).label,val.toFixed(2).replace('.',','),obs,exp.driveLink||'',ms[parseInt(m)-1],y]]);
+      showToast('Salvo no Drive e Sheets!');
+    }catch(e){
+      showToast('Salvo localmente. Verifique conexão.',false);
+    }
+  } else {
+    showToast('Salvo localmente (sem Drive)',false);
+  }
+
+  S.expenses.push(exp);
+  persist();
+  document.getElementById('saving-ind').style.display='none';
+  document.getElementById('save-btn').style.display='flex';
+  resetScan();
+  updateTopbar();
+}
+
+function resetScan(){
+  currentImage=null; currentImageBlob=null;
+  document.getElementById('img-preview').style.display='none';
+  document.getElementById('img-preview').src='';
+  document.getElementById('upload-zone').style.display='block';
+  document.getElementById('result-box').style.display='none';
+  document.getElementById('status-box').style.display='none';
+  document.getElementById('file-inp').value='';
+}
+
+function delExp(id){
+  if(!confirm('Excluir este registro?\n(A foto no Drive não será removida.)')) return;
+  S.expenses=S.expenses.filter(e=>e.id!==id);
+  persist(); renderList(); renderDash();
+}
+
+function renderDash(){
+  const ym=S.refMonth;
+  document.getElementById('dash-month-lbl').textContent=fmtYM(ym);
+  const exps=S.expenses.filter(e=>e.date&&e.date.slice(0,7)===ym);
+  const total=exps.reduce((s,e)=>s+(e.value||0),0);
+  const pension=S.pension||0;
+  const balance=pension-total;
+  document.getElementById('dash-metrics').innerHTML=`
+    <div class="met"><div class="met-lbl">Pensão do mês</div><div class="met-val" style="color:#185FA5">${fmtR(pension)}</div></div>
+    <div class="met"><div class="met-lbl">Total gasto</div><div class="met-val" style="color:#D85A30">${fmtR(total)}</div></div>
+    <div class="met"><div class="met-lbl">Saldo</div><div class="met-val" style="color:${balance>=0?'#1D9E75':'#D85A30'}">${fmtR(balance)}</div></div>
+    <div class="met"><div class="met-lbl">Comprovantes</div><div class="met-val">${exps.length}</div></div>`;
+  const bycat={};
+  exps.forEach(e=>{ bycat[e.category]=(bycat[e.category]||0)+(e.value||0); });
+  const sorted=Object.entries(bycat).sort((a,b)=>b[1]-a[1]);
+  const bars=document.getElementById('dash-bars');
+  if(!sorted.length){ bars.innerHTML='<div class="empty">Nenhum gasto neste mês</div>'; }
+  else bars.innerHTML=sorted.map(([cat,val])=>{const c=CATS[cat]||{label:cat,bar:'#888'};const w=total>0?Math.round(val/total*100):0;return `<div class="bar-row"><span class="bar-lbl">${c.label}</span><div class="bar-track"><div class="bar-fill" style="width:${w}%;background:${c.bar}"></div></div><span class="bar-amt">${fmtR(val)}</span></div>`;}).join('');
+  const recent=[...exps].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  document.getElementById('dash-recent').innerHTML=recent.length?recent.map(e=>expHtml(e,false)).join(''):'<div class="empty">Nenhum registro</div>';
+}
+
+function expHtml(e,del=false){
+  const c=CATS[e.category]||{label:e.category,color:'#444',bg:'#eee'};
+  const thumb=e.image?`<img class="exp-thumb" src="${e.image}" alt="comprovante" onclick="${e.driveLink?`window.open('${e.driveLink}','_blank')`:''}">` :`<div class="exp-thumb-ph"><i class="ti ti-receipt" style="font-size:17px;color:#bbb"></i></div>`;
+  const driveIcon=e.driveLink?`<i class="ti ti-brand-google-drive" style="font-size:12px;color:#185FA5;margin-left:4px"></i>`:'';
+  const delBtn=del?`<button class="del-btn" onclick="delExp('${e.id}')"><i class="ti ti-trash"></i> excluir</button>`:'';
+  return `<div class="exp-item">${thumb}<div class="exp-info"><div class="exp-desc">${e.description}${driveIcon}</div><div class="exp-meta"><span class="badge" style="background:${c.bg};color:${c.color};font-size:11px;padding:2px 8px">${c.label}</span> · ${fmtD(e.date)}</div></div><div class="exp-right"><div class="exp-val">${fmtR(e.value)}</div>${delBtn}</div></div>`;
+}
+
+function getMonths(){ return [...new Set(S.expenses.map(e=>e.date?e.date.slice(0,7):null).filter(Boolean))].sort().reverse(); }
+
+function renderList(){
+  const months=getMonths();
+  if(!S.listMonth||!months.includes(S.listMonth)) S.listMonth=months[0]||S.refMonth;
+  document.getElementById('month-chips').innerHTML=(months.length?months:[S.refMonth]).map(m=>`<div class="chip ${m===S.listMonth?'on':''}" onclick="setLM('${m}')">${fmtYM(m)}</div>`).join('');
+  const cf=document.getElementById('cat-filter').value;
+  let list=S.expenses.filter(e=>e.date&&e.date.slice(0,7)===S.listMonth);
+  if(cf) list=list.filter(e=>e.category===cf);
+  list.sort((a,b)=>b.date.localeCompare(a.date));
+  const el=document.getElementById('list-content');
+  if(!list.length){ el.innerHTML='<div class="empty">Nenhum gasto neste período</div>'; return; }
+  const total=list.reduce((s,e)=>s+(e.value||0),0);
+  el.innerHTML=`<div class="card">${list.map(e=>expHtml(e,true)).join('')}</div><div style="text-align:right;font-size:13px;font-weight:600;padding:2px 0;color:#1a1a1a">Total: ${fmtR(total)}</div>`;
+}
+
+function setLM(m){ S.listMonth=m; renderList(); }
+
+function populateRepMonth(){
+  const months=getMonths();
+  if(!months.includes(S.refMonth)) months.unshift(S.refMonth);
+  document.getElementById('rep-month').innerHTML=months.map(m=>`<option value="${m}">${fmtYM(m)}</option>`).join('');
+}
+
+function openSheets(){ if(S.sheetId) window.open(`https://docs.google.com/spreadsheets/d/${S.sheetId}`,'_blank'); else alert('Planilha ainda não criada. Salve um gasto primeiro.'); }
+function openDriveFolder(){ if(S.rootFolderId) window.open(`https://drive.google.com/drive/folders/${S.rootFolderId}`,'_blank'); else alert('Pasta ainda não criada. Salve um gasto primeiro.'); }
+
+function renderReport(){
+  const ym=document.getElementById('rep-month').value;
+  const mom=document.getElementById('rep-mom').value.trim()||'[responsável]';
+  const child=S.childName||'[criança]';
+  const exps=S.expenses.filter(e=>e.date&&e.date.slice(0,7)===ym).sort((a,b)=>a.date.localeCompare(b.date));
+  const total=exps.reduce((s,e)=>s+(e.value||0),0);
+  const bycat={};
+  exps.forEach(e=>{ bycat[e.category]=(bycat[e.category]||0)+(e.value||0); });
+  const today=new Date().toLocaleDateString('pt-BR');
+  const catRows=Object.entries(bycat).sort((a,b)=>b[1]-a[1]).map(([cat,val])=>{const c=CATS[cat]||{label:cat};const pct=total>0?Math.round(val/total*100):0;return `<div class="report-row"><span>${c.label}</span><span>${fmtR(val)} <span style="color:#bbb;font-size:11px">(${pct}%)</span></span></div>`;}).join('');
+  const detRows=exps.map(e=>`<div class="report-row"><span>${fmtD(e.date)} · ${e.description}${e.driveLink?` <a href="${e.driveLink}" target="_blank" style="color:#185FA5;font-size:11px">ver foto</a>`:''}</span><span>${fmtR(e.value)}</span></div>`).join('');
+  document.getElementById('report-out').innerHTML=`<div class="card" style="margin-top:4px">
+    <div style="font-size:16px;font-weight:700;margin-bottom:2px">Prestação de Contas</div>
+    <div style="font-size:13px;font-weight:600;color:#666;margin-bottom:14px">${fmtMonthFull(ym)}</div>
+    <div style="font-size:12px;color:#888;margin-bottom:14px">Responsável: ${mom} · Criança: ${child} · Emitido em ${today}</div>
+    <div class="sec-lbl">Por categoria</div>
+    <div style="background:#f8f8f8;border-radius:10px;padding:10px 12px;margin-bottom:12px">
+      ${catRows}
+      <div class="report-row" style="font-weight:700;font-size:14px;margin-top:4px"><span>Total gasto</span><span>${fmtR(total)}</span></div>
+    </div>
+    ${S.pension>0?`<div style="background:#f8f8f8;border-radius:10px;padding:10px 12px;margin-bottom:12px">
+      <div class="report-row"><span>Pensão recebida</span><span>${fmtR(S.pension)}</span></div>
+      <div class="report-row" style="font-weight:700"><span>Saldo</span><span style="color:${S.pension-total>=0?'#1D9E75':'#D85A30'}">${fmtR(S.pension-total)}</span></div>
+    </div>`:''}
+    <div class="sec-lbl">Detalhamento (${exps.length} comprovante${exps.length!==1?'s':''})</div>
+    <div style="background:#f8f8f8;border-radius:10px;padding:10px 12px;margin-bottom:12px">
+      ${detRows||'<div style="font-size:13px;color:#aaa">Nenhum gasto registrado</div>'}
+    </div>
+  </div>`;
+}
+
+loadLocal();
+checkCallback();
+if(!accessToken){
+  document.getElementById('topbar-sub').textContent='Faça login para começar';
+}
+</script>
+</body>
+</html>
