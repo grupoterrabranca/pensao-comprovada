@@ -108,6 +108,11 @@ input:checked+.slider:before{transform:translateX(20px)}
 .report-header{background:#E6F1FB;border-radius:10px;padding:14px;margin-bottom:12px}
 .report-header h3{font-size:15px;font-weight:700;color:#0C447C;margin-bottom:4px}
 .report-header p{font-size:12px;color:#185FA5}
+/* Mode selector */
+.mode-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border:1.5px solid #ddd;border-radius:10px;background:#fff;color:#888;cursor:pointer;font-family:inherit;font-size:11px;font-weight:600;transition:.15s}
+.mode-btn i{font-size:22px}
+.mode-btn.active{border-color:#185FA5;background:#E6F1FB;color:#185FA5}
+.mode-btn:active{transform:scale(.97)}
 /* Lançamentos */
 .lanc-item{background:#fff;border-radius:12px;padding:13px 14px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);cursor:pointer;transition:.15s;border-left:3px solid transparent}
 .lanc-item:hover{box-shadow:0 2px 8px rgba(0,0,0,.1)}
@@ -167,7 +172,7 @@ input:checked+.slider:before{transform:translateX(20px)}
         Entrar com Google
       </button>
       <p style="font-size:11px;color:#bbb;margin-top:14px">Dados salvos no seu próprio Google Drive.<br>Nunca compartilhamos suas informações.</p>
-      <p style="font-size:10px;color:#ccc;margin-top:16px;letter-spacing:.5px">v1.3.2 · Atualizado em 14/06/2026</p>
+      <p style="font-size:10px;color:#ccc;margin-top:16px;letter-spacing:.5px">v1.4.1 · Atualizado em 14/06/2026</p>
     </div>
   </div>
 
@@ -186,12 +191,71 @@ input:checked+.slider:before{transform:translateX(20px)}
     <div id="p-scan" class="pg on">
       <div class="card">
         <div class="card-title">Novo comprovante</div>
-        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-inp').click()">
-          <i class="ti ti-camera-up"></i>
-          <p>Tirar foto ou escolher da galeria</p>
-          <small>Mercado · Farmácia · Escola · Médico · Restaurante · Terapia...</small>
+
+        <!-- Modo selector -->
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:14px" id="mode-selector">
+          <button class="mode-btn active" onclick="setMode('camera')" id="mode-camera">
+            <i class="ti ti-camera"></i><span>Câmera</span>
+          </button>
+          <button class="mode-btn" onclick="setMode('galeria')" id="mode-galeria">
+            <i class="ti ti-photo"></i><span>Galeria / PDF</span>
+          </button>
+          <button class="mode-btn" onclick="setMode('pix')" id="mode-pix">
+            <i class="ti ti-clipboard-text"></i><span>Colar PIX</span>
+          </button>
         </div>
-        <input type="file" id="file-inp" accept="image/*" capture="environment" style="display:none" onchange="onFile(this)">
+
+        <!-- MODO CÂMERA -->
+        <div id="zone-camera">
+          <div class="upload-zone" onclick="document.getElementById('file-inp-camera').click()">
+            <i class="ti ti-camera-up"></i>
+            <p>Tirar foto do comprovante</p>
+            <small>Abre a câmera do celular</small>
+          </div>
+          <input type="file" id="file-inp-camera" accept="image/*" capture="environment" style="display:none" onchange="onFile(this,'image/jpeg')">
+        </div>
+
+        <!-- MODO GALERIA / PDF -->
+        <div id="zone-galeria" style="display:none">
+          <div style="background:#EAF3DE;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:13px;color:#27500A">
+            <strong><i class="ti ti-info-circle"></i> Como usar:</strong><br>
+            No app do banco, toque em <em>Salvar</em> ou <em>Copiar PDF</em> do comprovante — depois cole aqui ou escolha o arquivo salvo.
+          </div>
+          <!-- Zona de colar -->
+          <div class="upload-zone" id="paste-zone" tabindex="0"
+            onclick="this.focus()"
+            style="border-color:#1D9E75;position:relative;outline:none">
+            <i class="ti ti-clipboard-copy" style="color:#1D9E75"></i>
+            <p style="color:#27500A">Toque aqui e cole o PDF ou imagem</p>
+            <small>Ctrl+V · ⌘V · ou segure e toque em Colar</small>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin:10px 0">
+            <div style="flex:1;height:1px;background:#ddd"></div>
+            <span style="font-size:12px;color:#aaa">ou</span>
+            <div style="flex:1;height:1px;background:#ddd"></div>
+          </div>
+          <button class="btn btn-full" onclick="document.getElementById('file-inp-galeria').click()">
+            <i class="ti ti-folder-open"></i> Escolher arquivo salvo (imagem ou PDF)
+          </button>
+          <input type="file" id="file-inp-galeria" accept="image/*,application/pdf" style="display:none" onchange="onFile(this)">
+        </div>
+
+        <!-- MODO PIX / COLAR TEXTO -->
+        <div id="zone-pix" style="display:none">
+          <div style="background:#E6F1FB;border-radius:10px;padding:12px;margin-bottom:10px;font-size:13px;color:#0C447C">
+            <strong><i class="ti ti-info-circle"></i> Como usar:</strong><br>
+            No app do banco, abra o comprovante PIX → toque em <em>Compartilhar</em> ou <em>Copiar</em> → cole aqui. Funciona com qualquer banco.
+          </div>
+          <label style="margin-top:0">Cole o texto do comprovante PIX</label>
+          <textarea id="pix-text" rows="7" placeholder="Cole aqui o texto copiado do comprovante PIX...&#10;&#10;Ex:&#10;Transferência PIX realizada&#10;Valor: R$ 150,00&#10;Data: 14/06/2026&#10;Para: Clínica São Lucas"></textarea>
+          <button class="btn btn-primary btn-full" onclick="analisarPix()" style="margin-top:8px">
+            <i class="ti ti-sparkles"></i> Analisar com IA
+          </button>
+        </div>
+
+        <!-- Canvas oculto para conversão PDF -->
+        <canvas id="pdf-canvas" style="display:none"></canvas>
+
         <img id="img-preview" class="preview-img" alt="comprovante">
         <div id="status-box" class="status-box"></div>
 
@@ -605,7 +669,7 @@ input:checked+.slider:before{transform:translateX(20px)}
 <div class="toast" id="toast-global"></div>
 
 <div style="text-align:center;padding:8px;font-size:10px;color:#bbb;letter-spacing:.5px;position:fixed;bottom:0;left:0;right:0;background:#F5F0EB;border-top:1px solid #ede8e2;z-index:98">
-  Pensão Comprovada · v1.3.2 · 14/06/2026
+  Pensão Comprovada · v1.4.1 · 14/06/2026
 </div>
 
 <script>
@@ -832,22 +896,147 @@ function goPage(id){
   if(id==='p-report') populateRepMonth();
 }
 
-async function onFile(inp){
-  const f=inp.files[0]; if(!f) return;
-  currentImageBlob=f;
-  const reader=new FileReader();
-  reader.onload=async ev=>{
-    currentImage=ev.target.result;
-    document.getElementById('img-preview').src=currentImage;
-    document.getElementById('img-preview').style.display='block';
-    document.getElementById('upload-zone').style.display='none';
-    document.getElementById('result-box').style.display='none';
-    setStatus('IA analisando o comprovante...','analyzing');
-    await analyzeReceipt(currentImage,f.type||'image/jpeg');
-  };
-  reader.readAsDataURL(f);
-  inp.value='';
+// ── MODO DE ENTRADA ──────────────────────────────────────────
+
+function setMode(mode){
+  ['camera','galeria','pix'].forEach(m=>{
+    document.getElementById('zone-'+m).style.display = m===mode?'block':'none';
+    document.getElementById('mode-'+m).classList.toggle('active', m===mode);
+  });
+  resetScan(false);
+  // Activate paste listener when galeria mode is selected
+  if(mode==='galeria'){
+    setTimeout(()=>{ const pz=document.getElementById('paste-zone'); if(pz) pz.focus(); },100);
+  }
 }
+
+// Global paste handler — works when paste-zone is focused or anywhere in galeria mode
+document.addEventListener('paste', async function(ev){
+  const activeMode = document.querySelector('.mode-btn.active')?.id?.replace('mode-','');
+  if(activeMode!=='galeria') return;
+  const items = ev.clipboardData?.items;
+  if(!items) return;
+  for(const item of items){
+    if(item.kind==='file' && (item.type.startsWith('image/')||item.type==='application/pdf')){
+      ev.preventDefault();
+      const file = item.getAsFile();
+      if(!file) continue;
+      // Highlight paste zone briefly
+      const pz = document.getElementById('paste-zone');
+      if(pz){ pz.style.background='#EAF3DE'; setTimeout(()=>pz.style.background='',600); }
+      // Process as if selected via file input
+      currentImageBlob = file;
+      const isPdf = file.type==='application/pdf';
+      document.getElementById('result-box').style.display='none';
+      if(isPdf){
+        setStatus('Convertendo PDF colado...','analyzing');
+        try{
+          const pdfData = await readFileAsArrayBuffer(file);
+          const imgDataUrl = await pdfToImage(pdfData);
+          currentImage = imgDataUrl;
+          document.getElementById('img-preview').src = imgDataUrl;
+          document.getElementById('img-preview').style.display = 'block';
+          setStatus('IA analisando o comprovante...','analyzing');
+          await analyzeReceipt(imgDataUrl,'image/jpeg');
+        }catch(e){ setStatus('Erro ao converter PDF colado.','err'); }
+      } else {
+        const reader = new FileReader();
+        reader.onload = async ev2 => {
+          currentImage = ev2.target.result;
+          document.getElementById('img-preview').src = currentImage;
+          document.getElementById('img-preview').style.display = 'block';
+          setStatus('IA analisando o comprovante...','analyzing');
+          await analyzeReceipt(currentImage, file.type||'image/jpeg');
+        };
+        reader.readAsDataURL(file);
+      }
+      break;
+    }
+  }
+});
+
+// ── ARQUIVO (IMAGEM OU PDF) ───────────────────────────────────
+
+async function onFile(inp, forceMtype){
+  const f = inp.files[0]; if(!f) return;
+  currentImageBlob = f;
+  const isPdf = f.type==='application/pdf';
+  document.getElementById('result-box').style.display='none';
+  if(isPdf){
+    setStatus('Convertendo PDF para imagem...','analyzing');
+    try{
+      const pdfData = await readFileAsArrayBuffer(f);
+      const imgDataUrl = await pdfToImage(pdfData);
+      currentImage = imgDataUrl;
+      document.getElementById('img-preview').src = imgDataUrl;
+      document.getElementById('img-preview').style.display = 'block';
+      setStatus('IA analisando o comprovante...','analyzing');
+      await analyzeReceipt(imgDataUrl,'image/jpeg');
+    }catch(e){
+      setStatus('Erro ao converter PDF. Tente uma imagem.','err');
+    }
+  } else {
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      currentImage = ev.target.result;
+      document.getElementById('img-preview').src = currentImage;
+      document.getElementById('img-preview').style.display = 'block';
+      setStatus('IA analisando o comprovante...','analyzing');
+      await analyzeReceipt(currentImage, forceMtype||f.type||'image/jpeg');
+    };
+    reader.readAsDataURL(f);
+  }
+  inp.value = '';
+}
+
+function readFileAsArrayBuffer(f){
+  return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=e=>res(e.target.result); r.onerror=rej; r.readAsArrayBuffer(f); });
+}
+
+async function pdfToImage(arrayBuffer){
+  if(!window.pdfjsLib){
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+  const pdf = await window.pdfjsLib.getDocument({data:arrayBuffer}).promise;
+  const page = await pdf.getPage(1);
+  const viewport = page.getViewport({scale:2.0});
+  const canvas = document.getElementById('pdf-canvas');
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
+  return canvas.toDataURL('image/jpeg',0.92);
+}
+
+function loadScript(src){
+  return new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=rej; document.head.appendChild(s); });
+}
+
+// ── PIX / COLAR TEXTO ────────────────────────────────────────
+
+async function analisarPix(){
+  const txt = document.getElementById('pix-text').value.trim();
+  if(!txt){ alert('Cole o texto do comprovante PIX primeiro.'); return; }
+  currentImage = null;
+  currentImageBlob = null;
+  document.getElementById('img-preview').style.display='none';
+  document.getElementById('result-box').style.display='none';
+  setStatus('IA analisando o comprovante PIX...','analyzing');
+  const prompt = `Você é especialista em reconhecer comprovantes PIX e transferências bancárias brasileiras.\n\nAnalise o texto abaixo (copiado de um comprovante PIX ou transferência) e extraia:\n1. Nome do destinatário ou estabelecimento\n2. Valor (número)\n3. Data (YYYY-MM-DD)\n4. Categoria: educacao, saude, alimentacao, vestuario, higiene, moradia, transporte, esporte, lazer, tecnologia, extraordinaria, documentacao, ou outros\n5. Subcategoria (ex: consulta médica, mensalidade, supermercado, etc)\n6. Descrição curta (máximo 50 chars)\n7. É despesa essencial? (true/false)\n8. É despesa extraordinária? (true/false)\n\nTexto:\n${txt}\n\nResponda SOMENTE em JSON sem markdown:\n{"estab":"","valor":0.00,"data":"YYYY-MM-DD","categoria":"","subcategoria":"","descricao":"","essencial":true,"extraordinaria":false}\n\nSe não identificar algum campo use null.`;
+  try{
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:400,messages:[{role:'user',content:prompt}]})});
+    const data = await resp.json();
+    const out = (data.content||[]).map(c=>c.text||'').join('');
+    let parsed = {};
+    try{ parsed = JSON.parse(out.replace(/```json|```/g,'').trim()); }catch(e){}
+    hideStatus();
+    showResult(parsed);
+  }catch(err){
+    setStatus('Erro ao analisar. Preencha manualmente.','err');
+    showResult({});
+  }
+}
+
 
 async function analyzeReceipt(dataUrl,mtype){
   const b64=dataUrl.split(',')[1];
@@ -927,14 +1116,16 @@ async function saveExpense(){
   resetScan(); updateTopbar();
 }
 
-function resetScan(){
+function resetScan(resetMode=true){
   currentImage=null; currentImageBlob=null;
   document.getElementById('img-preview').style.display='none';
   document.getElementById('img-preview').src='';
-  document.getElementById('upload-zone').style.display='block';
   document.getElementById('result-box').style.display='none';
   document.getElementById('status-box').style.display='none';
-  document.getElementById('file-inp').value='';
+  const fc = document.getElementById('file-inp-camera'); if(fc) fc.value='';
+  const fg = document.getElementById('file-inp-galeria'); if(fg) fg.value='';
+  const pt = document.getElementById('pix-text'); if(pt) pt.value='';
+  if(resetMode) setMode('camera');
 }
 
 function delExp(id){
