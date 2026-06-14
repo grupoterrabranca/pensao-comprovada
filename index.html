@@ -7,8 +7,8 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:15px;background:#f2f2f7;color:#1a1a1a}
-.app{max-width:430px;margin:0 auto;background:#f2f2f7;min-height:100vh;padding-bottom:84px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:15px;background:#F5F0EB;color:#1a1a1a}
+.app{max-width:430px;margin:0 auto;background:#F5F0EB;min-height:100vh;padding-bottom:104px}
 .topbar{background:#fff;border-bottom:1px solid #e0e0e0;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .topbar h1{font-size:15px;font-weight:700;color:#1a1a1a}
 .topbar p{font-size:11px;color:#888;margin-top:1px}
@@ -108,6 +108,38 @@ input:checked+.slider:before{transform:translateX(20px)}
 .report-header{background:#E6F1FB;border-radius:10px;padding:14px;margin-bottom:12px}
 .report-header h3{font-size:15px;font-weight:700;color:#0C447C;margin-bottom:4px}
 .report-header p{font-size:12px;color:#185FA5}
+/* Lançamentos */
+.lanc-item{background:#fff;border-radius:12px;padding:13px 14px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);cursor:pointer;transition:.15s;border-left:3px solid transparent}
+.lanc-item:hover{box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.lanc-item.cat-educacao{border-left-color:#185FA5}
+.lanc-item.cat-saude{border-left-color:#D85A30}
+.lanc-item.cat-alimentacao{border-left-color:#1D9E75}
+.lanc-item.cat-vestuario{border-left-color:#7F77DD}
+.lanc-item.cat-higiene{border-left-color:#639922}
+.lanc-item.cat-moradia{border-left-color:#888780}
+.lanc-item.cat-transporte{border-left-color:#EF9F27}
+.lanc-item.cat-esporte{border-left-color:#1D9E75}
+.lanc-item.cat-lazer{border-left-color:#D4537E}
+.lanc-item.cat-tecnologia{border-left-color:#185FA5}
+.lanc-item.cat-extraordinaria{border-left-color:#EF9F27}
+.lanc-item.cat-documentacao{border-left-color:#888780}
+.lanc-item.cat-outros{border-left-color:#aaa}
+.lanc-id{font-size:10px;color:#aaa;font-family:monospace;letter-spacing:.5px}
+.lanc-desc{font-size:14px;font-weight:700;color:#1a1a1a;margin:2px 0}
+.lanc-meta{font-size:11px;color:#888;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.lanc-val{font-size:15px;font-weight:700;color:#1a1a1a;white-space:nowrap}
+.edited-badge{background:#FFF3CD;color:#856404;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px}
+/* Overlay modal */
+.overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:200;overflow-y:auto;padding:16px}
+.overlay.show{display:block}
+.modal{background:#fff;border-radius:16px;padding:20px;max-width:420px;margin:0 auto;position:relative}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:4px;color:#1a1a1a}
+.modal-sub{font-size:12px;color:#888;margin-bottom:16px}
+.close-btn{position:absolute;top:14px;right:14px;background:none;border:none;font-size:22px;cursor:pointer;color:#888;line-height:1}
+.log-item{background:#f8f8f8;border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:12px}
+.log-item-date{color:#aaa;font-size:10px;margin-bottom:2px}
+.log-item-text{color:#444}
+.danger-box{background:#FCEBEB;border-radius:10px;padding:12px;margin-bottom:12px;font-size:13px;color:#791F1F}
 </style>
 </head>
 <body>
@@ -135,6 +167,7 @@ input:checked+.slider:before{transform:translateX(20px)}
         Entrar com Google
       </button>
       <p style="font-size:11px;color:#bbb;margin-top:14px">Dados salvos no seu próprio Google Drive.<br>Nunca compartilhamos suas informações.</p>
+      <p style="font-size:10px;color:#ccc;margin-top:16px;letter-spacing:.5px">v1.3.2 · Atualizado em 14/06/2026</p>
     </div>
   </div>
 
@@ -144,6 +177,7 @@ input:checked+.slider:before{transform:translateX(20px)}
       <button class="nb on" onclick="goPage('p-scan')"><i class="ti ti-camera"></i>Escanear</button>
       <button class="nb" onclick="goPage('p-dash')"><i class="ti ti-layout-dashboard"></i>Painel</button>
       <button class="nb" onclick="goPage('p-list')"><i class="ti ti-list"></i>Gastos</button>
+      <button class="nb" onclick="goPage('p-lanc')"><i class="ti ti-clipboard-list"></i>Lançamentos</button>
       <button class="nb" onclick="goPage('p-ficha')"><i class="ti ti-users"></i>Ficha</button>
       <button class="nb" onclick="goPage('p-report')"><i class="ti ti-file-analytics"></i>Relatório</button>
     </div>
@@ -316,6 +350,49 @@ input:checked+.slider:before{transform:translateX(20px)}
       <div id="list-content"></div>
     </div>
 
+    <!-- LANÇAMENTOS -->
+    <div id="p-lanc" class="pg">
+      <div class="card" style="padding:12px">
+        <div class="row2" style="margin-bottom:8px">
+          <div>
+            <label style="margin-top:0">Período</label>
+            <input type="month" id="lanc-filter-month" onchange="renderLanc()">
+          </div>
+          <div>
+            <label style="margin-top:0">Categoria</label>
+            <select id="lanc-filter-cat" onchange="renderLanc()">
+              <option value="">Todas</option>
+              <option value="educacao">Educação</option>
+              <option value="saude">Saúde</option>
+              <option value="alimentacao">Alimentação</option>
+              <option value="vestuario">Vestuário</option>
+              <option value="higiene">Higiene</option>
+              <option value="moradia">Moradia</option>
+              <option value="transporte">Transporte</option>
+              <option value="esporte">Esporte</option>
+              <option value="lazer">Lazer</option>
+              <option value="tecnologia">Tecnologia</option>
+              <option value="extraordinaria">Extraordinária</option>
+              <option value="documentacao">Documentação</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
+        </div>
+        <div class="row2">
+          <div>
+            <label style="margin-top:0">Data início</label>
+            <input type="date" id="lanc-filter-de" onchange="renderLanc()">
+          </div>
+          <div>
+            <label style="margin-top:0">Data fim</label>
+            <input type="date" id="lanc-filter-ate" onchange="renderLanc()">
+          </div>
+        </div>
+      </div>
+      <div id="lanc-count" style="font-size:12px;color:#888;margin-bottom:8px;text-align:right"></div>
+      <div id="lanc-list"></div>
+    </div>
+
     <!-- FICHA CADASTRAL -->
     <div id="p-ficha" class="pg">
       <div class="card">
@@ -426,7 +503,110 @@ input:checked+.slider:before{transform:translateX(20px)}
   </div>
 </div>
 
+<!-- DETALHE DO LANÇAMENTO -->
+<div class="overlay" id="overlay-detalhe">
+  <div class="modal">
+    <button class="close-btn" onclick="closeOverlay('overlay-detalhe')"><i class="ti ti-x"></i></button>
+    <div class="modal-title">Detalhe do lançamento</div>
+    <div class="modal-sub" id="det-id"></div>
+    <div id="det-content"></div>
+    <div id="det-log" style="margin-top:12px;display:none">
+      <div class="section-divider">Histórico de edições</div>
+      <div id="det-log-items"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="openEdit()"><i class="ti ti-edit"></i> Editar</button>
+      <button class="btn btn-danger" style="flex:1;justify-content:center" onclick="openDelete()"><i class="ti ti-trash"></i> Excluir</button>
+    </div>
+    <button class="btn btn-full" style="margin-top:8px" onclick="closeOverlay('overlay-detalhe')"><i class="ti ti-x"></i> Fechar</button>
+  </div>
+</div>
+
+<!-- EDITAR LANÇAMENTO -->
+<div class="overlay" id="overlay-edit">
+  <div class="modal">
+    <button class="close-btn" onclick="closeOverlay('overlay-edit')"><i class="ti ti-x"></i></button>
+    <div class="modal-title">Editar lançamento</div>
+    <div class="modal-sub" id="edit-id"></div>
+    <label>Descrição</label>
+    <input type="text" id="edit-desc">
+    <div class="row2">
+      <div><label>Valor (R$)</label><input type="number" id="edit-val" step="0.01" min="0"></div>
+      <div><label>Data</label><input type="date" id="edit-dt"></div>
+    </div>
+    <label>Categoria</label>
+    <select id="edit-cat" onchange="updateEditSubcat()">
+      <option value="educacao">📚 Educação</option>
+      <option value="saude">🏥 Saúde</option>
+      <option value="alimentacao">🍽️ Alimentação</option>
+      <option value="vestuario">👕 Vestuário</option>
+      <option value="higiene">🧴 Higiene</option>
+      <option value="moradia">🏠 Moradia</option>
+      <option value="transporte">🚌 Transporte</option>
+      <option value="esporte">⚽ Esporte e atividades</option>
+      <option value="lazer">🎠 Lazer</option>
+      <option value="tecnologia">💻 Tecnologia</option>
+      <option value="extraordinaria">⚠️ Extraordinária</option>
+      <option value="documentacao">📄 Documentação</option>
+      <option value="outros">📦 Outros</option>
+    </select>
+    <label>Subcategoria</label>
+    <select id="edit-subcat"></select>
+    <label>Pago por</label>
+    <select id="edit-pagopor">
+      <option value="mae">Mãe / Genitora</option>
+      <option value="pai">Pai / Genitor</option>
+      <option value="compartilhado">Compartilhado</option>
+      <option value="outro">Outro</option>
+    </select>
+    <div class="card" style="padding:8px 12px;margin-top:10px;margin-bottom:0">
+      <div class="toggle-row">
+        <div><div class="toggle-lbl">Despesa essencial</div></div>
+        <label class="switch"><input type="checkbox" id="edit-essencial"><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-lbl">Despesa extraordinária</div></div>
+        <label class="switch"><input type="checkbox" id="edit-extraordinaria"><span class="slider"></span></label>
+      </div>
+      <div class="toggle-row">
+        <div><div class="toggle-lbl">Recorrente</div></div>
+        <label class="switch"><input type="checkbox" id="edit-recorrente"><span class="slider"></span></label>
+      </div>
+    </div>
+    <label>Observação</label>
+    <textarea id="edit-obs" placeholder="Observações..."></textarea>
+    <div style="background:#FFF3CD;border-radius:8px;padding:10px 12px;margin-top:12px;font-size:13px;color:#856404">
+      <i class="ti ti-alert-triangle"></i> <strong>Motivo da edição obrigatório</strong> — registrado no histórico de auditoria
+    </div>
+    <label>Motivo da edição *</label>
+    <textarea id="edit-motivo" placeholder="Descreva o motivo da alteração (ex: valor digitado incorretamente, categoria errada...)"></textarea>
+    <button class="btn btn-primary btn-full" onclick="saveEdit()"><i class="ti ti-check"></i> Salvar edição</button>
+    <button class="btn btn-full" style="margin-top:6px" onclick="closeOverlay('overlay-edit')"><i class="ti ti-x"></i> Cancelar</button>
+  </div>
+</div>
+
+<!-- CONFIRMAR EXCLUSÃO -->
+<div class="overlay" id="overlay-delete">
+  <div class="modal">
+    <button class="close-btn" onclick="closeOverlay('overlay-delete')"><i class="ti ti-x"></i></button>
+    <div class="modal-title">Excluir lançamento</div>
+    <div class="modal-sub">Esta ação não pode ser desfeita.</div>
+    <div class="danger-box" id="delete-preview"></div>
+    <div style="background:#FCEBEB;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:13px;color:#791F1F">
+      <i class="ti ti-alert-triangle"></i> A foto no Google Drive será <strong>movida para a pasta Cancelados</strong> e renomeada para <code>CANCELADO_[data]_[nome]</code> — mantida para auditoria mas separada dos comprovantes ativos.
+    </div>
+    <label>Motivo da exclusão *</label>
+    <textarea id="delete-motivo" placeholder="Descreva o motivo da exclusão (ex: lançamento duplicado, comprovante errado...)"></textarea>
+    <button class="btn btn-danger btn-full" style="margin-top:4px" onclick="confirmDelete()"><i class="ti ti-trash"></i> Confirmar exclusão</button>
+    <button class="btn btn-full" style="margin-top:6px" onclick="closeOverlay('overlay-delete')"><i class="ti ti-x"></i> Cancelar</button>
+  </div>
+</div>
+
 <div class="toast" id="toast-global"></div>
+
+<div style="text-align:center;padding:8px;font-size:10px;color:#bbb;letter-spacing:.5px;position:fixed;bottom:0;left:0;right:0;background:#F5F0EB;border-top:1px solid #ede8e2;z-index:98">
+  Pensão Comprovada · v1.3.2 · 14/06/2026
+</div>
 
 <script>
 const CLIENT_ID = '916320845002-kqish7him6hjinbft1i1cchr6tkhsioh.apps.googleusercontent.com';
@@ -645,9 +825,10 @@ function goPage(id){
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
   document.getElementById(id).classList.add('on');
-  ['p-scan','p-dash','p-list','p-ficha','p-report'].forEach((p,i)=>{ if(p===id) document.querySelectorAll('.nb')[i].classList.add('on'); });
+  ['p-scan','p-dash','p-list','p-lanc','p-ficha','p-report'].forEach((p,i)=>{ if(p===id) document.querySelectorAll('.nb')[i].classList.add('on'); });
   if(id==='p-dash') renderDash();
   if(id==='p-list') renderList();
+  if(id==='p-lanc') renderLanc();
   if(id==='p-report') populateRepMonth();
 }
 
@@ -918,6 +1099,248 @@ function gerarTextoFormal(periodo,total,child,mae,pai,processo,ncomp){
 loadLocal();
 checkCallback();
 if(!accessToken){ document.getElementById('topbar-sub').textContent='Faça login para começar'; }
+
+// ── LANÇAMENTOS ──────────────────────────────────────────────
+
+function renderLanc(){
+  const fm = document.getElementById('lanc-filter-month').value;
+  const fc = document.getElementById('lanc-filter-cat').value;
+  const de = document.getElementById('lanc-filter-de').value;
+  const ate = document.getElementById('lanc-filter-ate').value;
+  let list = [...S.expenses];
+  if(fm) list = list.filter(e=>e.date&&e.date.slice(0,7)===fm);
+  if(fc) list = list.filter(e=>e.category===fc);
+  if(de) list = list.filter(e=>e.date&&e.date>=de);
+  if(ate) list = list.filter(e=>e.date&&e.date<=ate);
+  // ordem de lançamento (savedAt), mais recente primeiro
+  list.sort((a,b)=>(b.savedAt||b.date).localeCompare(a.savedAt||a.date));
+  const count = document.getElementById('lanc-count');
+  const total = list.reduce((s,e)=>s+(e.value||0),0);
+  count.textContent = `${list.length} lançamento${list.length!==1?'s':''} · Total: ${fmtR(total)}`;
+  const el = document.getElementById('lanc-list');
+  if(!list.length){ el.innerHTML='<div class="empty">Nenhum lançamento encontrado</div>'; return; }
+  el.innerHTML = list.map(e=>{
+    const c = CATS[e.category]||{label:e.category,color:'#444',bg:'#eee'};
+    const editedBadge = e.editLog&&e.editLog.length ? `<span class="edited-badge"><i class="ti ti-edit" style="font-size:10px"></i> Editado ${e.editLog.length}x</span>` : '';
+    const essTag = e.essencial?`<span class="ess-badge">ESS</span>`:'';
+    const extTag = e.extraordinaria?`<span class="ext-badge">EXT</span>`:'';
+    const driveIcon = e.driveLink?`<i class="ti ti-brand-google-drive" style="font-size:11px;color:#185FA5"></i>`:'';
+    return `<div class="lanc-item cat-${e.category}" onclick="openDetalhe('${e.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div style="flex:1;min-width:0">
+          <div class="lanc-id">#${e.id}</div>
+          <div class="lanc-desc">${e.description}</div>
+          <div class="lanc-meta">
+            <span class="badge" style="background:${c.bg};color:${c.color};font-size:10px;padding:2px 7px">${c.label}</span>
+            ${e.subcategory?`<span style="color:#bbb">·</span><span>${e.subcategory}</span>`:''}
+            <span style="color:#bbb">·</span><span>${fmtD(e.date)}</span>
+            ${essTag}${extTag}${driveIcon}${editedBadge}
+          </div>
+          <div style="font-size:10px;color:#ccc;margin-top:2px">Lançado em ${new Date(e.savedAt||e.date).toLocaleString('pt-BR')}</div>
+        </div>
+        <div class="lanc-val">${fmtR(e.value)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── DETALHE ──────────────────────────────────────────────────
+
+let currentDetId = null;
+
+function openDetalhe(id){
+  const e = S.expenses.find(x=>x.id===id);
+  if(!e) return;
+  currentDetId = id;
+  const c = CATS[e.category]||{label:e.category,color:'#444',bg:'#eee'};
+  document.getElementById('det-id').textContent = `ID: #${e.id} · Lançado em ${new Date(e.savedAt||e.date).toLocaleString('pt-BR')}`;
+  const pagopor = {mae:'Mãe / Genitora',pai:'Pai / Genitor',compartilhado:'Compartilhado',outro:'Outro'}[e.pagopor]||e.pagopor||'—';
+  const pagto = {dinheiro:'Dinheiro',debito:'Cartão débito',credito:'Cartão crédito',pix:'PIX',transferencia:'Transferência',boleto:'Boleto',outro:'Outro'}[e.pagamento]||e.pagamento||'—';
+  const tipdoc = {nf:'Nota fiscal',recibo:'Recibo',boleto:'Boleto pago',extrato:'Extrato bancário',foto:'Foto do produto',outro:'Outro'}[e.tipdoc]||e.tipdoc||'—';
+  document.getElementById('det-content').innerHTML = `
+    ${e.image?`<img src="${e.image}" style="width:100%;max-height:180px;object-fit:cover;border-radius:10px;margin-bottom:12px">`:''}
+    <div style="background:#f8f8f8;border-radius:10px;padding:10px 12px;margin-bottom:10px">
+      <div class="field-row"><span class="field-lbl">Descrição</span><span style="font-weight:700;text-align:right;max-width:60%">${e.description}</span></div>
+      <div class="field-row"><span class="field-lbl">Valor</span><span style="font-weight:700;color:#185FA5">${fmtR(e.value)}</span></div>
+      <div class="field-row"><span class="field-lbl">Data do gasto</span><span style="font-weight:600">${fmtD(e.date)}</span></div>
+      <div class="field-row"><span class="field-lbl">Categoria</span><span class="badge" style="background:${c.bg};color:${c.color}">${c.label}</span></div>
+      ${e.subcategory?`<div class="field-row"><span class="field-lbl">Subcategoria</span><span>${e.subcategory}</span></div>`:''}
+      <div class="field-row"><span class="field-lbl">Pago por</span><span>${pagopor}</span></div>
+      <div class="field-row"><span class="field-lbl">Forma pgto.</span><span>${pagto}</span></div>
+      <div class="field-row"><span class="field-lbl">Comprovante</span><span>${tipdoc}${e.numdoc?' · '+e.numdoc:''}</span></div>
+      <div class="field-row">
+        <span class="field-lbl">Flags</span>
+        <span style="display:flex;gap:4px">
+          ${e.essencial?'<span class="ess-badge">ESS</span>':''}
+          ${e.extraordinaria?'<span class="ext-badge">EXT</span>':''}
+          ${e.recorrente?'<span style="background:#E6F1FB;color:#0C447C;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">REC</span>':''}
+        </span>
+      </div>
+      ${e.obs?`<div class="field-row"><span class="field-lbl">Observação</span><span style="text-align:right;max-width:65%;font-size:13px">${e.obs}</span></div>`:''}
+      ${e.driveLink?`<div class="field-row"><span class="field-lbl">Drive</span><a href="${e.driveLink}" target="_blank" style="color:#185FA5;font-size:13px"><i class="ti ti-brand-google-drive"></i> Ver comprovante</a></div>`:''}
+    </div>`;
+  const logEl = document.getElementById('det-log');
+  const logItems = document.getElementById('det-log-items');
+  if(e.editLog&&e.editLog.length){
+    logEl.style.display='block';
+    logItems.innerHTML = e.editLog.map(l=>`
+      <div class="log-item">
+        <div class="log-item-date"><i class="ti ti-clock" style="font-size:10px"></i> ${new Date(l.at).toLocaleString('pt-BR')} · ${l.type==='edicao'?'Edição':'Exclusão'}</div>
+        <div class="log-item-text"><strong>Motivo:</strong> ${l.motivo}</div>
+        ${l.campos?`<div class="log-item-text" style="margin-top:2px;color:#aaa">${l.campos}</div>`:''}
+      </div>`).join('');
+  } else { logEl.style.display='none'; }
+  openOverlay('overlay-detalhe');
+}
+
+// ── EDITAR ────────────────────────────────────────────────────
+
+function openEdit(){
+  const e = S.expenses.find(x=>x.id===currentDetId);
+  if(!e) return;
+  document.getElementById('edit-id').textContent = `Editando #${e.id}`;
+  document.getElementById('edit-desc').value = e.description||'';
+  document.getElementById('edit-val').value = e.value||'';
+  document.getElementById('edit-dt').value = e.date||'';
+  document.getElementById('edit-cat').value = e.category||'outros';
+  updateEditSubcat(e.subcategory);
+  document.getElementById('edit-pagopor').value = e.pagopor||'mae';
+  document.getElementById('edit-essencial').checked = !!e.essencial;
+  document.getElementById('edit-extraordinaria').checked = !!e.extraordinaria;
+  document.getElementById('edit-recorrente').checked = !!e.recorrente;
+  document.getElementById('edit-obs').value = e.obs||'';
+  document.getElementById('edit-motivo').value = '';
+  closeOverlay('overlay-detalhe');
+  openOverlay('overlay-edit');
+}
+
+function updateEditSubcat(current){
+  const cat = document.getElementById('edit-cat').value;
+  const subs = SUBCATS[cat]||['Outros'];
+  document.getElementById('edit-subcat').innerHTML = subs.map(s=>`<option value="${s}">${s}</option>`).join('');
+  if(current){ document.getElementById('edit-subcat').value = current; }
+}
+
+async function saveEdit(){
+  const motivo = document.getElementById('edit-motivo').value.trim();
+  if(!motivo){ alert('O motivo da edição é obrigatório.'); return; }
+  const idx = S.expenses.findIndex(x=>x.id===currentDetId);
+  if(idx<0) return;
+  const old = {...S.expenses[idx]};
+  const newDesc = document.getElementById('edit-desc').value.trim();
+  const newVal = parseFloat(document.getElementById('edit-val').value);
+  const newDt = document.getElementById('edit-dt').value;
+  const newCat = document.getElementById('edit-cat').value;
+  const newSub = document.getElementById('edit-subcat').value;
+  const newPago = document.getElementById('edit-pagopor').value;
+  const newEss = document.getElementById('edit-essencial').checked;
+  const newExt = document.getElementById('edit-extraordinaria').checked;
+  const newRec = document.getElementById('edit-recorrente').checked;
+  const newObs = document.getElementById('edit-obs').value.trim();
+  // Build change summary
+  const changes = [];
+  if(old.description!==newDesc) changes.push(`Descrição: "${old.description}" → "${newDesc}"`);
+  if(old.value!==newVal) changes.push(`Valor: ${fmtR(old.value)} → ${fmtR(newVal)}`);
+  if(old.date!==newDt) changes.push(`Data: ${fmtD(old.date)} → ${fmtD(newDt)}`);
+  if(old.category!==newCat) changes.push(`Categoria: ${(CATS[old.category]||{label:old.category}).label} → ${(CATS[newCat]||{label:newCat}).label}`);
+  const logEntry = {type:'edicao',at:new Date().toISOString(),motivo,campos:changes.join(' | ')};
+  S.expenses[idx] = {...old,description:newDesc,value:newVal,date:newDt,category:newCat,subcategory:newSub,pagopor:newPago,essencial:newEss,extraordinaria:newExt,recorrente:newRec,obs:newObs,editLog:[...(old.editLog||[]),logEntry],updatedAt:new Date().toISOString()};
+  persist();
+  // Log to Sheets audit tab
+  if(accessToken&&S.sheetId){
+    try{
+      await sheetsAppendAudit([[new Date().toLocaleString('pt-BR'),'EDIÇÃO',`#${currentDetId}`,old.description,motivo,changes.join(' | ')]]);
+    }catch(e){}
+  }
+  showToast('Lançamento editado e registrado!');
+  closeOverlay('overlay-edit');
+  renderLanc();
+}
+
+// ── EXCLUIR ───────────────────────────────────────────────────
+
+function openDelete(){
+  const e = S.expenses.find(x=>x.id===currentDetId);
+  if(!e) return;
+  document.getElementById('delete-preview').innerHTML = `<strong>${e.description}</strong><br>${fmtD(e.date)} · ${fmtR(e.value)} · ${(CATS[e.category]||{label:e.category}).label}`;
+  document.getElementById('delete-motivo').value='';
+  closeOverlay('overlay-detalhe');
+  openOverlay('overlay-delete');
+}
+
+async function confirmDelete(){
+  const motivo = document.getElementById('delete-motivo').value.trim();
+  if(!motivo){ alert('O motivo da exclusão é obrigatório.'); return; }
+  const e = S.expenses.find(x=>x.id===currentDetId);
+  if(!e) return;
+
+  // Rename and move file to Cancelados folder on Drive
+  if(accessToken && e.driveFileId){
+    try{
+      const dateStr = (e.date||new Date().toISOString().slice(0,10)).replace(/-/g,'');
+      const safeName = (e.description||'comprovante').replace(/[^a-zA-Z0-9\u00C0-\u024F]/g,'_').slice(0,30);
+      const newName = `CANCELADO_${dateStr}_${safeName}`;
+
+      // Get or create Cancelados folder inside root
+      const cancelFolder = await getOrCreateSub('Cancelados', S.rootFolderId);
+
+      // Get current parents of the file
+      const fileMeta = await fetch(`https://www.googleapis.com/drive/v3/files/${e.driveFileId}?fields=parents`,{
+        headers:{Authorization:'Bearer '+accessToken}
+      });
+      const fileMd = await fileMeta.json();
+      const oldParents = (fileMd.parents||[]).join(',');
+
+      // Move (add new parent, remove old) + rename in single PATCH
+      await fetch(`https://www.googleapis.com/drive/v3/files/${e.driveFileId}?addParents=${cancelFolder.id}&removeParents=${oldParents}&fields=id`,{
+        method:'PATCH',
+        headers:{'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'},
+        body:JSON.stringify({name:newName})
+      });
+    }catch(err){ console.warn('Não foi possível mover arquivo no Drive',err); }
+  }
+
+  // Save to audit log
+  if(accessToken&&S.sheetId){
+    try{
+      const dateStr = (e.date||'').replace(/-/g,'');
+      const safeName = (e.description||'comprovante').replace(/[^a-zA-Z0-9\u00C0-\u024F]/g,'_').slice(0,30);
+      await sheetsAppendAudit([[
+        new Date().toLocaleString('pt-BR'),
+        'EXCLUSÃO',
+        `#${e.id}`,
+        e.description,
+        motivo,
+        `Arquivo movido para pasta Cancelados e renomeado para CANCELADO_${dateStr}_${safeName}`
+      ]]);
+    }catch(err){}
+  }
+
+  S.expenses = S.expenses.filter(x=>x.id!==currentDetId);
+  persist();
+  showToast('Excluído. Arquivo movido para pasta Cancelados.');
+  closeOverlay('overlay-delete');
+  renderLanc();
+  renderDash();
+}
+
+async function sheetsAppendAudit(values){
+  // Ensure Auditoria sheet exists
+  const meta = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${S.sheetId}`,{headers:{Authorization:'Bearer '+accessToken}});
+  const md = await meta.json();
+  const hasAudit = md.sheets&&md.sheets.some(s=>s.properties.title==='Auditoria');
+  if(!hasAudit){
+    await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${S.sheetId}:batchUpdate`,{method:'POST',headers:{'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify({requests:[{addSheet:{properties:{title:'Auditoria'}}}]})});
+    await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${S.sheetId}/values/Auditoria!A1:append?valueInputOption=USER_ENTERED`,{method:'POST',headers:{'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify({values:[['Data/Hora','Tipo','ID','Descrição','Motivo','Alterações']]})});
+  }
+  await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${S.sheetId}/values/Auditoria!A1:append?valueInputOption=USER_ENTERED`,{method:'POST',headers:{'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'},body:JSON.stringify({values})});
+}
+
+// ── OVERLAY HELPERS ──────────────────────────────────────────
+
+function openOverlay(id){ document.getElementById(id).classList.add('show'); document.body.style.overflow='hidden'; }
+function closeOverlay(id){ document.getElementById(id).classList.remove('show'); document.body.style.overflow=''; }
+
 </script>
 </body>
 </html>
